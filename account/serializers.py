@@ -18,3 +18,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'phone_number',
             'corporate_number'
         )
+
+class UserLoginSerializer(serializers.ModelSerializer):
+
+    email = serializers.EmailField(max_length=255)
+    class Meta:
+        model = CustomerUser
+        fields = [
+            'email',
+            'password'
+        ]
