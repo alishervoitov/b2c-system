@@ -6,6 +6,8 @@ from rest_framework import status, generics, permissions
 from account.models import CustomerUser
 from account.serializers import RegistrationSerializer, UserLoginSerializer
 
+from account.renderer import UserRenderer
+
 
 class RegistrationAPIView(generics.GenericAPIView):
 
@@ -55,6 +57,7 @@ class UserLoginView(generics.GenericAPIView):
 
     serializer_class = UserLoginSerializer
     permission_classes = [permissions.AllowAny]
+    renderer_classes = [UserRenderer]
 
     def post(self, request):
 
