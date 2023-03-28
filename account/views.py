@@ -1,10 +1,11 @@
 from django.contrib.auth import authenticate
 from django.shortcuts import render
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, generics, permissions
 
 from account.models import CustomerUser
-from account.serializers import RegistrationSerializer, UserLoginSerializer
+from account.serializers import RegistrationSerializer, UserLoginSerializer, UserProfileSerializer
 
 from account.renderer import UserRenderer
 
@@ -57,7 +58,7 @@ class UserLoginView(generics.GenericAPIView):
 
     serializer_class = UserLoginSerializer
     permission_classes = [permissions.AllowAny]
-    renderer_classes = [UserRenderer]
+    # renderer_classes = [UserRenderer]
 
     def post(self, request):
 
@@ -71,3 +72,17 @@ class UserLoginView(generics.GenericAPIView):
                     'Message': serializer.data},
                     status=status.HTTP_200_OK
                 )
+
+class UserProfileView(generics.GenericAPIView):
+
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    # renderer_classes = [UserRenderer]
+
+    def get(self, request, format=None):
+
+        serializer = UserProfileSerializer(request.user)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )

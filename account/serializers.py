@@ -5,6 +5,7 @@ from account.models import CustomerUser
 
 class RegistrationSerializer(serializers.ModelSerializer):
 
+    password1 = serializers.CharField(max_length=30)
     class Meta:
         model = CustomerUser
         fields = (
@@ -12,6 +13,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'full_name',
             'email',
             'password',
+            'password1',
             'country',
             'company_name',
             'user_type',
@@ -27,4 +29,18 @@ class UserLoginSerializer(serializers.ModelSerializer):
         fields = [
             'email',
             'password'
+        ]
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomerUser
+        fields = [
+            'full_name',
+            'email',
+            'country',
+            'company_name',
+            'user_type',
+            'phone_number',
+            'corporate_number',
         ]
