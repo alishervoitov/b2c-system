@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status, generics, permissions
 
 from account.models import CustomerUser
-from account.serializers import RegistrationSerializer, UserLoginSerializer, UserProfileSerializer
+from account.serializers import RegistrationSerializer, UserLoginSerializer, UserProfileSerializer, \
+    ChangePasswordSerializer
 
 from account.renderer import UserRenderer
 
@@ -85,4 +86,37 @@ class UserProfileView(generics.GenericAPIView):
         return Response(
             serializer.data,
             status=status.HTTP_200_OK
+        )
+
+class ChangePasswordView(generics.UpdateAPIView):
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ChangePasswordSerializer
+    # renderer_classes = [UserRenderer]
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def post(self, request, *args, **kwargs):
+
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        data = request.data
+        new_password = data['new_password']
+
+        if serializer.is_valid():
+            if not self.object.check_password(serializer.data.get('password')):
+                return Response({"password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            self.object.set_password(new_password)
+            self.object.save()
+            return Response({
+                'Message': request.data,
+                'Msg': 'Password changed succesfully'
+            },
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
         )
