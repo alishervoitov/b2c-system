@@ -21,6 +21,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'corporate_number'
         )
 
+
+
 class UserLoginSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(max_length=255)
