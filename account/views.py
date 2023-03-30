@@ -3,6 +3,7 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, generics, permissions
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from account.models import CustomerUser
 from account.serializers import RegistrationSerializer, UserLoginSerializer, UserProfileSerializer, \
@@ -10,6 +11,13 @@ from account.serializers import RegistrationSerializer, UserLoginSerializer, Use
 
 from account.renderer import UserRenderer
 
+def get_tokens_for_user(user):
+
+    refresh = RefreshToken.for_user(user)
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 class RegistrationAPIView(generics.GenericAPIView):
 
