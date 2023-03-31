@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,8 +9,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from account.models import CustomerUser
 from account.serializers import RegistrationSerializer, UserLoginSerializer, UserProfileSerializer, \
     ChangePasswordSerializer, EditProfileSerializer
+from account.utils import Util
 
-from account.renderer import UserRenderer
 
 def get_tokens_for_user(user):
 
@@ -57,8 +58,24 @@ class RegistrationAPIView(generics.GenericAPIView):
             user.set_password(password)
             user.save()
 
+            from django.utils.encoding import force_bytes
+            from django.utils.http import urlsafe_base64_encode
+            uid = urlsafe_base64_encode(force_bytes(user.id))
+            token = PasswordResetTokenGenerator().make_token(user)
+            link = 'http://127.0.0.1:8000/auth/verify/' + uid + '/' + token + '/'
+            print(link)
+            body = 'Use link below to verify your email ' + link
+            data = {
+                'subject': 'Your verify link',
+                'body': body,
+                'to_email': user.email,
+            }
+            Util.send_email(data)
+
             return Response({
+                'token': get_tokens_for_user(user),
                 'Message': request.data,
+                'Msg': 'We send link to your email for verify',
             },
                 status=status.HTTP_200_OK
             )
