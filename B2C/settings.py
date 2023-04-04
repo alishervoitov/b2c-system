@@ -121,7 +121,7 @@ AUTH_USER_MODEL = 'account.CustomerUser'
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'voitovalisher020@gmail.com'
+EMAIL_HOST_USER = 'voitov@gmail.com'
 EMAIL_HOST_PASSWORD = 'leqwwndwdkodctcn'
 EMAIL_USE_TLS = True
 
