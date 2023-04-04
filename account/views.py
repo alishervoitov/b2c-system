@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from account.models import CustomerUser
 from account.serializers import RegistrationSerializer, UserLoginSerializer, UserProfileSerializer, \
-    ChangePasswordSerializer, EditProfileSerializer
+    ChangePasswordSerializer, EditProfileSerializer, SendPasswordEmailSerializer
 from account.utils import Util
 
 
@@ -170,5 +170,26 @@ class EditProfileView(generics.GenericAPIView):
                 'Message': request.data,
                 'Msg': 'Your profile updated succesfully'
             },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+class SendPasswordEmailView(generics.GenericAPIView):
+
+    serializer_class = SendPasswordEmailSerializer
+    permission_classes = [permissions.AllowAny]
+    # renderer_classes = [UserRenderer]
+
+    def post(self, request, format=None):
+        serializer = SendPasswordEmailSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            return Response(
+                {
+                    'Message': request.data,
+                    'Msg': 'Password reset link send. Please check your email!'
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
