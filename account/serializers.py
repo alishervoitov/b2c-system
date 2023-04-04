@@ -1,7 +1,8 @@
 from xml.dom import ValidationErr
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import serializers
 
 from account.models import CustomerUser
@@ -114,3 +115,30 @@ class SendPasswordEmailSerializer(serializers.Serializer):
 
         else:
             raise ValidationErr('You are not a registered user')
+
+class UserPasswordResetSerializer(serializers.Serializer):
+
+    password = serializers.CharField(max_length=255, style={'input_type': 'password'}, write_only=True)
+    password1 = serializers.CharField(max_length=255, style={'input_type': 'password'}, write_only=True)
+
+    class Meta:
+        fields = ['password']
+
+    def validate(self, attrs):
+        try:
+            password = attrs.get('password')
+            password1 = attrs.get('password1')
+            uid = self.context.get('uid')
+            token = self.context.get('token')
+            if password != password1:
+                raise serializers.ValidationError('Password and confirm password doesnt match')
+            id = smart_str(urlsafe_base64_decode(uid))
+            user = CustomerUser.objects.get(id=id)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                raise ValidationErr('Token is not valid or expired')
+            user.set_password(password)
+            user.save()
+            return attrs
+        except DjangoUnicodeDecodeError as identifier:
+            PasswordResetTokenGenerator(user, token)
+            raise ValidationErr('Token is not valid or expired')
