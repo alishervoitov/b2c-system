@@ -60,3 +60,19 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.comment
+
+class RatingStar(models.Model):
+
+    value = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.value
+
+class Rating(models.Model):
+
+    user = models.ForeignKey(CustomerUser, on_delete=models.CASCADE, related_name='rating_user')
+    star = models.PositiveIntegerField(default=0)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='rating')
+
+    def __str__(self):
+        return f'{self.star} - {self.product}'
