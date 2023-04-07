@@ -5,8 +5,15 @@ from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from product.models import Product
-from product.serializers import ProductSerializer, ProductDetailSerializer
+from product.models import Product, Category
+from product.serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer
+
+
+class CategoryView(generics.ListAPIView):
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class ProductView(generics.ListAPIView):
