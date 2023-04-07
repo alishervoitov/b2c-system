@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'product',
     'zakaz',
     'rest_framework',
-    'drf_yasg',
+    'drf_yasg'
     # 'rest_framework_swagger',
 ]
 
