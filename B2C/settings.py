@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'product',
     'zakaz',
     'rest_framework',
-    'drf_yasg'
+    'drf_yasg',
+    'django_filters',
     # 'rest_framework_swagger',
 ]
 

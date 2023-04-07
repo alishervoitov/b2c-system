@@ -13,3 +13,7 @@ class ProductView(generics.ListAPIView):
     queryset = Product.objects.filter()
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['category_id', 'name', 'country']
+    search_fields = ['name']
+    pagination_class = PageNumberPagination
