@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from product.models import Product, Category
+from product.models import Product, Category, Comment
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -38,4 +38,15 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'pharmacotherapeutic_group',
             'contraindication',
             'storage_condition',
+        ]
+
+class CommentSerializer(serializers.ModelSerializer):
+
+    product_id = serializers.IntegerField()
+    class Meta:
+        model = Comment
+        fields = [
+            'product_id',
+            'comment',
+            # 'user'
         ]
