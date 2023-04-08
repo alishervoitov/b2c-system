@@ -11,6 +11,7 @@ class CategorySerializer(serializers.ModelSerializer):
             'description',
         ]
 
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -20,6 +21,20 @@ class ProductSerializer(serializers.ModelSerializer):
             'price',
             'medicine_form',
         ]
+
+
+
+class CommentSerializer(serializers.ModelSerializer):
+
+    product_id = serializers.IntegerField()
+    class Meta:
+        model = Comment
+        fields = [
+            'product_id',
+            'comment',
+            # 'user'
+        ]
+
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,15 +53,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'pharmacotherapeutic_group',
             'contraindication',
             'storage_condition',
-        ]
-
-class CommentSerializer(serializers.ModelSerializer):
-
-    product_id = serializers.IntegerField()
-    class Meta:
-        model = Comment
-        fields = [
-            'product_id',
             'comment',
-            # 'user'
         ]
+
