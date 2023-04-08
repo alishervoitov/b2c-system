@@ -3,10 +3,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from product.models import Product, Category, Comment
-from product.serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, CommentSerializer
+from product.models import Product, Category, Comment, Rating
+from product.serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, CommentSerializer, \
+    RatingSerializer
 
 
 class CategoryView(generics.ListAPIView):
@@ -59,4 +61,25 @@ class CommentView(generics.ListAPIView, generics.GenericAPIView):
             comment=comment,
         )
         comments.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class AddStarRatingView(generics.ListAPIView):
+
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+
+        user = request.user
+        product = Product.objects.get(id=request.data['product_id'])
+        star = request.data['star']
+
+        ratingss = Comment.objects.create(
+            user=user,
+            product=product,
+            star=star,
+        )
+        ratingss.save()
         return Response(status=status.HTTP_200_OK)

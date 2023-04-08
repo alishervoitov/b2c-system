@@ -1,6 +1,18 @@
 from rest_framework import serializers
 
-from product.models import Product, Category, Comment
+from product.models import Product, Category, Comment, Rating
+
+
+class RatingSerializer(serializers.ModelSerializer):
+
+    product_id = serializers.IntegerField()
+    class Meta:
+        model = Rating
+        fields = [
+            'product_id',
+            # 'user',
+            'star',
+        ]
 
 
 class CategorySerializer(serializers.ModelSerializer):
