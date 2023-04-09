@@ -1,6 +1,8 @@
 from django.db import models
 
 from account.models import CustomerUser
+from product.models import Product
+
 
 class Order(models.Model):
 
@@ -22,3 +24,16 @@ class Order(models.Model):
 
     def __str__(self):
         return f'{self.customer.__str__()} -> order:{self.id}'
+
+
+class OrderDetail(models.Model):
+
+    user = models.ForeignKey(CustomerUser, on_delete=models.CASCADE, related_name='details')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='orders')
+    quantity = models.IntegerField(default=1)
+
+    def total_price(self):
+        return self.product.price*self.quantity
+
+    def __str__(self):
+        return f'order:{self.user} - {self.product}, quantity:{self.quantity}'
