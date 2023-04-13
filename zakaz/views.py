@@ -68,3 +68,28 @@ class CartItemDelView(generics.DestroyAPIView):
         product.save()
         target_product.delete()
         return Response(status=status.HTTP_200_OK, data={"detail": "deleted"})
+
+
+class CartItemAddOneView(APIView):
+
+    permission_classes = (permissions.IsAuthenticated, )
+    # renderer_classes = [UserRenderer]
+
+    def get(self, request, pk, format=None):
+        user = request.user
+        cart_item = OrderDetail.objects.filter(user=user)
+        target_product = cart_item.get(pk=pk)
+        product = get_object_or_404(Product, id=target_product.product.id)
+        if product.quantity <= 0:
+            return Response(
+                data={
+                    "Message": "This item is sold out try another one !",
+                    "code": "sold_out"})
+
+        target_product.quantity = target_product.quantity + 1
+        product.quantity = product.quantity - 1
+        product.save()
+        target_product.save()
+        return Response(
+            status=status.HTTP_226_IM_USED,
+            data={"Message": 'one object added', "code": "done"})
