@@ -93,3 +93,31 @@ class CartItemAddOneView(APIView):
         return Response(
             status=status.HTTP_226_IM_USED,
             data={"Message": 'one object added', "code": "done"})
+
+
+class CartItemReduceOneView(APIView):
+
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def get(self, request, pk, format=None):
+        user = request.user
+        cart_item = OrderDetail.objects.filter(user=user)
+        target_product = cart_item.get(pk=pk)
+        product = get_object_or_404(Product, id=target_product.product.id)
+        if target_product.quantity == 1:
+            target_product.delete()
+            return Response(
+                data={
+                    "detail": "There is no more item like this in tour cart",
+                    "code": "no_more"})
+
+        target_product.quantity = target_product.quantity - 1
+        product.quantity = product.quantity + 1
+        product.save()
+        target_product.save()
+        return Response(
+            status=status.HTTP_226_IM_USED,
+            data={
+                "detail": 'One object deleted',
+                "code": "Done"
+            })
