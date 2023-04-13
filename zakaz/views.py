@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django_filters import filters
 from rest_framework import generics, permissions, status
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -13,9 +14,9 @@ class CartItemView(generics.ListAPIView):
 
     serializer_class = CartItemSerializer
     permission_classes = (permissions.IsAuthenticated, )
-    filter_backends = [filters.SearchFilter]
-    search_fields = [
-        'product__name', 'product__description', 'product__category__name']
+    # filter_backends = [filters.SearchFilter]
+    # search_fields = [
+    #     'product__name', 'product__description', 'product__category__name']
 
     def get_queryset(self):
         user = self.request.user
@@ -52,3 +53,18 @@ class CartItemAddView(APIView):
             },
                 status=status.HTTP_201_CREATED
             )
+
+class CartItemDelView(generics.DestroyAPIView):
+
+    permission_classes = (permissions.IsAuthenticated, )
+    queryset = OrderDetail.objects.all()
+
+    def delete(self, request, pk, format=None):
+        user = request.user
+        cart_item = OrderDetail.objects.filter(user=user)
+        target_product = get_object_or_404(cart_item, pk=pk)
+        product = get_object_or_404(Product, id=target_product.product.id)
+        product.quantity = product.quantity + target_product.quantity
+        product.save()
+        target_product.delete()
+        return Response(status=status.HTTP_200_OK, data={"detail": "deleted"})
